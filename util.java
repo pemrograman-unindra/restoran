@@ -60,26 +60,29 @@ public class util {
 		return nf.format(angka);
 	}
 
-	public static void tampilkanData(ArrayList<LinkedHashMap<String, String>> list) {
-		if (list.size() > 0) {
-			LinkedHashMap<String, String> judulKolom = list.get(0);
-			LinkedHashMap<String, Integer> charLength = new LinkedHashMap<String, Integer>();
-
-			Integer jumlahKolom = 0;
-			for (String key : judulKolom.keySet()) {
-				charLength.put(key, key.length());
-				jumlahKolom++;
-			}
-			for (LinkedHashMap<String, String> map : list) {
-				for (String key : map.keySet()) {
-					if (map.get(key) != null && map.get(key).length() > charLength.get(key)) {
-						charLength.put(key, map.get(key).length());
-					}
+	public static LinkedHashMap<String, Integer> getTableCharLength(ArrayList<LinkedHashMap<String, String>> list) {
+		LinkedHashMap<String, String> judulKolom = list.get(0);
+		LinkedHashMap<String, Integer> charLength = new LinkedHashMap<String, Integer>();
+		for (String key : judulKolom.keySet()) {
+			charLength.put(key, key.length());
+		}
+		for (LinkedHashMap<String, String> map : list) {
+			for (String key : map.keySet()) {
+				if (map.get(key) != null && map.get(key).length() > charLength.get(key)) {
+					charLength.put(key, map.get(key).length());
 				}
 			}
+		}
+		return charLength;
+	}
+
+	public static void tampilkanData(ArrayList<LinkedHashMap<String, String>> list) {
+		if (list.size() > 0) {
+			LinkedHashMap<String, Integer> charLength = getTableCharLength(list);
 
 			cetakGaris(charLength);
 
+			LinkedHashMap<String, String> judulKolom = list.get(0);
 			for (String key : judulKolom.keySet()) {
 				System.out.print("|");
 				cetakCell(charLength.get(key), key);

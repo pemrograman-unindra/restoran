@@ -122,7 +122,6 @@ public class pelanggan {
 	public static void ubah() {
 		System.out.println();
 		System.out.println("📝 Ubah Data Pelanggan");
-		System.out.println("-----------------------------------------");
 		Integer id = pilih();
 		if (id==0) {
 			menu();
@@ -149,7 +148,6 @@ public class pelanggan {
 	public static void hapus() {
 		System.out.println();
 		System.out.println("❌ Hapus Data Pelanggan");
-		System.out.println("-----------------------------------------");
 		Integer id = pilih();
 		if (id==0) {
 			menu();

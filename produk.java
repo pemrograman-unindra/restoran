@@ -11,14 +11,14 @@ public class produk {
 	public static void buatTabel() {
 		kategoriProduk.buatTabel();
 		String sql = ""
-			+ " CREATE TABLE IF NOT EXISTS produk ("
-			+ "   id INTEGER PRIMARY KEY AUTOINCREMENT,"
-			+ "   id_kategori INTEGER,"
-			+ "   nomor VARCHAR(25) UNIQUE,"
-			+ "   nama VARCHAR(255),"
-			+ "   harga INTEGER,"
-			+ "   FOREIGN KEY (id_kategori) REFERENCES kategori_produk (id)"
-			+ " )";
+			+ "CREATE TABLE IF NOT EXISTS produk ("
+			+ "  id INTEGER PRIMARY KEY AUTOINCREMENT,"
+			+ "  id_kategori INTEGER,"
+			+ "  nomor VARCHAR(25) UNIQUE,"
+			+ "  nama VARCHAR(255),"
+			+ "  harga INTEGER,"
+			+ "  FOREIGN KEY (id_kategori) REFERENCES kategori_produk (id)"
+			+ ")";
 		try {
 			Statement stmt = util.koneksiDB().createStatement();
 			stmt.execute(sql);
@@ -124,7 +124,6 @@ public class produk {
 	public static void tambah() {
 		System.out.println();
 		System.out.println("➕ Tambah Data Menu");
-		System.out.println("-----------------------------------------");
 		String nomor = nomorBaru();
 		Integer idKategori = kategoriProduk.pilih();
 		if (idKategori==0) {
@@ -151,7 +150,6 @@ public class produk {
 	public static void ubah() {
 		System.out.println();
 		System.out.println("📝 Ubah Data Menu");
-		System.out.println("-----------------------------------------");
 		Integer id = pilih();
 		if (id==0) {
 			menu();
@@ -183,7 +181,6 @@ public class produk {
 	public static void hapus() {
 		System.out.println();
 		System.out.println("❌ Hapus Data Menu");
-		System.out.println("-----------------------------------------");
 		Integer id = pilih();
 		if (id==0) {
 			menu();
@@ -361,7 +358,6 @@ class kategoriProduk {
 	public static void ubah() {
 		System.out.println();
 		System.out.println("📝 Ubah Data Kategori");
-		System.out.println("-----------------------------------------");
 		Integer id = pilih();
 		if (id==0) {
 			produk.menu();
@@ -386,7 +382,6 @@ class kategoriProduk {
 	public static void hapus() {
 		System.out.println();
 		System.out.println("❌ Hapus Data Kategori");
-		System.out.println("-----------------------------------------");
 		Integer id = pilih();
 		if (id==0) {
 			produk.menu();
