@@ -8,11 +8,11 @@ import java.util.Scanner;
 
 public class util {
 
-	static Connection dbConn;
+	private static Connection dbConn;
 
-	static NumberFormat nf;
+	private static NumberFormat nf;
 
-	static Scanner scanner;
+	private static Scanner scanner;
 
 	public static Connection koneksiDB() {
 		if (dbConn == null) {
@@ -103,7 +103,7 @@ public class util {
 		}
 	}
 
-	static void cetakGaris(LinkedHashMap<String, Integer> charLength) {
+	private static void cetakGaris(LinkedHashMap<String, Integer> charLength) {
 		for (String key : charLength.keySet()) {
 			System.out.print("+");
 			for (Integer i = 0; i < (charLength.get(key) + 2); i++) {

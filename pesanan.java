@@ -131,11 +131,11 @@ public class pesanan {
 			ResultSet rs1 = ps1.executeQuery();
 			String nomor = "";
 			String status = "";
-			String pelanggan = "";
+			String namaPelanggan = "";
 			while (rs1.next()) {
 				nomor = rs1.getString("nomor");
 				status = rs1.getString("status");
-				pelanggan = rs1.getString("pelanggan");
+				namaPelanggan = rs1.getString("pelanggan");
 			}
 
 			ps2.setInt(1, id);
@@ -150,7 +150,7 @@ public class pesanan {
 				data.put("Subtotal", util.formatAngka(rs2.getInt("jumlah")*rs2.getInt("harga")));
 				rincian.add(data);
 			}
-			cetakRincian(nomor, status, pelanggan, rincian);
+			cetakRincian(nomor, status, namaPelanggan, rincian);
 		} catch (Exception e) {
 			System.out.println();
 			System.out.println("Gagal menampilkan rincian pesanan : " + e.getMessage());
@@ -168,9 +168,10 @@ public class pesanan {
 			menu();
 		}
 		ArrayList<LinkedHashMap<String, String>> rincian = new ArrayList<LinkedHashMap<String, String>>();
-		rincian = tambahRincian(rincian);
+		rincian = tambahRincian(nomor, idPelanggan, rincian);
+
 		String status = inputStatus();
-		Integer nilaiPesanan = hitungNilai();
+		Integer nilaiPesanan = hitungNilai(rincian);
 		String sql1 = "INSERT INTO pesanan (id_pelanggan, nomor, status, nilai_pesanan) VALUES (?, ?, ?, ?)";
 		String sql2 = "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) VALUES (?, ?, ?, ?)";
 		try (PreparedStatement ps1 = util.koneksiDB().prepareStatement(sql1)) {
@@ -182,19 +183,18 @@ public class pesanan {
 			ResultSet rs = ps1.getGeneratedKeys();
 			if (rs.next()) {
 				Integer idPesanan = rs.getInt(1);
-				for (LinkedHashMap data : rincian) {
+				for (LinkedHashMap<String, String> data : rincian) {
 					PreparedStatement ps2 = util.koneksiDB().prepareStatement(sql2);
 					ps2.setInt(1, idPesanan);
-					ps2.setInt(2, util.toInteger(data.get("idProduk").toString()));
-					ps2.setInt(3, util.toInteger(data.get("jumlah").toString()));
-					ps2.setString(3, data.get("catatan").toString());
+					ps2.setInt(2, util.toInteger(data.get("idProduk")));
+					ps2.setInt(3, util.toInteger(data.get("jumlah")));
+					ps2.setString(4, data.get("catatan"));
 					ps2.executeUpdate();
 				}
 			}
 			System.out.println();
 			System.out.println("Data pesanan berhasil ditambahkan!");
 			System.out.println();
-			// cetakRincian(nomor, status, pelanggan, rincian);
 		} catch (Exception e) {
 			System.out.println();
 			System.out.println("Gagal menambah data pesanan : " + e.getMessage());
@@ -215,9 +215,9 @@ public class pesanan {
 			menu();
 		}
 		ArrayList<LinkedHashMap<String, String>> rincian = new ArrayList<LinkedHashMap<String, String>>();
-		rincian = tambahRincian(rincian);
+		rincian = tambahRincian(nomor, idPelanggan, rincian);
 		String status = inputStatus();
-		Integer nilaiPesanan = hitungNilai();
+		Integer nilaiPesanan = hitungNilai(rincian);
 		String sql1 = "UPDATE pesanan SET id_pelanggan = ?, nomor = ?, status = ?, nilai_pesanan = ? WHERE id = ?";
 		String sql2 = "DELETE FROM rincian_pesanan WHERE id_pesanan = ?";
 		String sql3 = "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) VALUES (?, ?, ?, ?)";
@@ -235,18 +235,17 @@ public class pesanan {
 			ps2.setInt(1, id);
 			ps2.executeUpdate();
 
-			for (LinkedHashMap data : rincian) {
-				PreparedStatement ps3 = util.koneksiDB().prepareStatement(sql2);
+			for (LinkedHashMap<String, String> data : rincian) {
+				PreparedStatement ps3 = util.koneksiDB().prepareStatement(sql3);
 				ps3.setInt(1, id);
-				ps3.setInt(2, util.toInteger(data.get("idProduk").toString()));
-				ps3.setInt(3, util.toInteger(data.get("jumlah").toString()));
-				ps3.setString(3, data.get("catatan").toString());
+				ps3.setInt(2, util.toInteger(data.get("idProduk")));
+				ps3.setInt(3, util.toInteger(data.get("jumlah")));
+				ps3.setString(4, data.get("catatan"));
 				ps3.executeUpdate();
 			}
 			System.out.println();
 			System.out.println("Data pesanan berhasil diubah!");
 			System.out.println();
-			// cetakRincian(nomor, status, pelanggan, rincian);
 		} catch (Exception e) {
 			System.out.println();
 			System.out.println("Gagal merubah data pesanan : " + e.getMessage());
@@ -295,16 +294,64 @@ public class pesanan {
 		return pilih();
 	}
 
-	static ArrayList<LinkedHashMap<String, String>> tambahRincian(ArrayList<LinkedHashMap<String, String>> rincian) {
+	private static ArrayList<LinkedHashMap<String, String>> tambahRincian(String nomor, Integer idPelanggan, ArrayList<LinkedHashMap<String, String>> rincian) {
 		Integer idProduk = produk.pilih();
 		if (idProduk==0) {
 			menu();
 		}
-		// todo
+		Integer jumlah = inputJumlah();
+		String catatan = inputCatatan();
+
+		LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
+		data.put("idProduk", idProduk.toString());
+		data.put("jumlah", jumlah.toString());
+		data.put("catatan", catatan);
+		rincian.add(data);
+
+		return menuTambahRincian(nomor, idPelanggan, rincian);
+	}
+
+	private static ArrayList<LinkedHashMap<String, String>> menuTambahRincian(String nomor, Integer idPelanggan, ArrayList<LinkedHashMap<String, String>> rincian) {
+		System.out.println();
+		System.out.println("1. Lanjutkan ➡️");
+		System.out.println("2. Lihat Rincian 🗂️");
+		System.out.println("3. Tambah Menu ➕");
+		System.out.println("4. Batal ❌");
+		System.out.println();
+		System.out.print("Silakan pilih menu (1-4) : "); String pilihan = util.bacaInput();
+		if (pilihan.equals("2")) {
+			return draftRincian(nomor, idPelanggan, rincian);
+		} else if (pilihan.equals("3")) {
+			return tambahRincian(nomor, idPelanggan, rincian);
+		} else if (pilihan.equals("4")) {
+			menu();
+		}
 		return rincian;
 	}
 
-	static String inputNomorBaru(Integer idLama) {
+	private static ArrayList<LinkedHashMap<String, String>> draftRincian(String nomor, Integer idPelanggan, ArrayList<LinkedHashMap<String, String>> rincian) {
+		String namaPelanggan = pelanggan.getNamaById(idPelanggan);
+
+		ArrayList<LinkedHashMap<String, String>> rincianCetak = new ArrayList<LinkedHashMap<String, String>>();
+		for (LinkedHashMap<String, String> data : rincian) {
+			LinkedHashMap<String, String> dataCetak = new LinkedHashMap<String, String>();
+
+			Integer jumlah = util.toInteger(data.get("jumlah"));
+			Integer harga = produk.getHargaById(util.toInteger(data.get("idProduk")));
+
+			dataCetak.put("Menu", produk.getNamaById(util.toInteger(data.get("idProduk"))));
+			dataCetak.put("Catatan", data.get("catatan"));
+			dataCetak.put("Jumlah", util.formatAngka(jumlah));
+			dataCetak.put("Harga Satuan", util.formatAngka(harga));
+			dataCetak.put("Subtotal", util.formatAngka(jumlah*harga));
+			rincianCetak.add(dataCetak);
+		}
+
+		cetakRincian(nomor, "Draft", namaPelanggan, rincianCetak);
+		return menuTambahRincian(nomor, idPelanggan, rincian);
+	}
+
+	private static String inputNomorBaru(Integer idLama) {
 		System.out.print("Masukan Nomor pesanan Baru : "); String nomor = util.bacaInput();
 		if (nomor.equals("0")) {
 			menu();
@@ -322,21 +369,30 @@ public class pesanan {
 		return nomor;
 	}
 
-	static String inputStatus() {
+	private static String inputStatus() {
 		System.out.print("Masukan Status : "); String status = util.bacaInput();
 		return status;
 	}
 
-	static Integer hitungNilai() {
-		System.out.print("Masukan Nilai : "); String nilai_pesananStr = util.bacaInput();
-		if (!util.isValidNumber(nilai_pesananStr)) {
-			System.out.println("nilai_pesanan harus berupa angka! silakan isi dengan angka yang valid");
-			return hitungNilai();
-		}
-		return util.toInteger(nilai_pesananStr);
+	private static Integer inputJumlah() {
+		System.out.print("Masukan Jumlah : "); String jumlah = util.bacaInput();
+		return util.toInteger(jumlah);
 	}
 
-	static String nomorBaru() {
+	private static String inputCatatan() {
+		System.out.print("Masukan Catatan : "); String catatan = util.bacaInput();
+		return catatan;
+	}
+
+	private static Integer hitungNilai(ArrayList<LinkedHashMap<String, String>> rincian) {
+		Integer total = 0;
+		for (LinkedHashMap<String, String> data : rincian) {
+			total += util.toInteger(data.get("jumlah")) * produk.getHargaById(util.toInteger(data.get("idProduk")));
+		}
+		return total;
+	}
+
+	private static String nomorBaru() {
 		Integer nomor = 0;
 		String sql = "SELECT MAX(nomor) nomor FROM pesanan";
 		try (ResultSet rs = util.koneksiDB().createStatement().executeQuery(sql)) {
@@ -348,7 +404,7 @@ public class pesanan {
 		return baru.toString();
 	}
 
-	static Integer getIdByNomor(String nomor) {
+	private static Integer getIdByNomor(String nomor) {
 		Integer id = 0;
 		String sql = "SELECT id FROM pesanan WHERE nomor = ? LIMIT 1";
 		try (PreparedStatement ps = util.koneksiDB().prepareStatement(sql)) {
@@ -362,7 +418,7 @@ public class pesanan {
 		return id;
 	}
 
-	static void cetakRincian(String nomor, String status, String pelanggan, ArrayList<LinkedHashMap<String, String>> rincian) {
+	private static void cetakRincian(String nomor, String status, String pelanggan, ArrayList<LinkedHashMap<String, String>> rincian) {
 		System.out.println();
 		System.out.println("Nomor     : " + nomor);
 		System.out.println("Status    : " + status);

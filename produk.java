@@ -213,7 +213,7 @@ public class produk {
 		return pilih();
 	}
 
-	static String inputNomorBaru(Integer idLama) {
+	private static String inputNomorBaru(Integer idLama) {
 		System.out.print("Masukan Nomor Menu Baru : "); String nomor = util.bacaInput();
 		if (nomor.equals("0")) {
 			menu();
@@ -231,12 +231,12 @@ public class produk {
 		return nomor;
 	}
 
-	static String inputNama() {
+	private static String inputNama() {
 		System.out.print("Masukan Nama : "); String nama = util.bacaInput();
 		return nama;
 	}
 
-	static Integer inputHarga() {
+	private static Integer inputHarga() {
 		System.out.print("Masukan Harga : "); String hargaStr = util.bacaInput();
 		if (!util.isValidNumber(hargaStr)) {
 			System.out.println("Harga harus berupa angka! silakan isi dengan angka yang valid");
@@ -245,7 +245,7 @@ public class produk {
 		return util.toInteger(hargaStr);
 	}
 
-	static String nomorBaru() {
+	private static String nomorBaru() {
 		Integer nomor = 0;
 		String sql = "SELECT MAX(nomor) nomor FROM produk";
 		try (ResultSet rs = util.koneksiDB().createStatement().executeQuery(sql)) {
@@ -257,7 +257,7 @@ public class produk {
 		return baru.toString();
 	}
 
-	static Integer getIdByNomor(String nomor) {
+	private static Integer getIdByNomor(String nomor) {
 		Integer id = 0;
 		String sql = "SELECT id FROM produk WHERE nomor = ? LIMIT 1";
 		try (PreparedStatement ps = util.koneksiDB().prepareStatement(sql)) {
@@ -269,6 +269,34 @@ public class produk {
 		} catch (Exception e) {}
 
 		return id;
+	}
+
+	public static String getNamaById(Integer id) {
+		String nama = "";
+		String sql = "SELECT nama FROM produk WHERE id = ? LIMIT 1";
+		try (PreparedStatement ps = util.koneksiDB().prepareStatement(sql)) {
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				nama = rs.getString("nama");
+			}
+		} catch (Exception e) {}
+
+		return nama;
+	}
+
+	public static Integer getHargaById(Integer id) {
+		Integer harga = 0;
+		String sql = "SELECT harga FROM produk WHERE id = ? LIMIT 1";
+		try (PreparedStatement ps = util.koneksiDB().prepareStatement(sql)) {
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				harga = rs.getInt("harga");
+			}
+		} catch (Exception e) {}
+
+		return harga;
 	}
 }
 
@@ -414,7 +442,7 @@ class kategoriProduk {
 		return pilih();
 	}
 
-	static String inputNomorBaru(Integer idLama) {
+	private static String inputNomorBaru(Integer idLama) {
 		System.out.print("Masukan Nomor Kategori Baru : "); String nomor = util.bacaInput();
 		if (nomor.equals("0")) {
 			produk.menu();
@@ -432,12 +460,12 @@ class kategoriProduk {
 		return nomor;
 	}
 
-	static String inputNama() {
+	private static String inputNama() {
 		System.out.print("Masukan Nama : "); String nama = util.bacaInput();
 		return nama;
 	}
 
-	static String nomorBaru() {
+	private static String nomorBaru() {
 		Integer nomor = 0;
 		String sql = "SELECT MAX(nomor) nomor FROM kategori_produk";
 		try (ResultSet rs = util.koneksiDB().createStatement().executeQuery(sql)) {
@@ -449,7 +477,7 @@ class kategoriProduk {
 		return baru.toString();
 	}
 
-	static Integer getIdByNomor(String nomor) {
+	private static Integer getIdByNomor(String nomor) {
 		Integer id = 0;
 		String sql = "SELECT id FROM kategori_produk WHERE nomor = ? LIMIT 1";
 		try (PreparedStatement ps = util.koneksiDB().prepareStatement(sql)) {
