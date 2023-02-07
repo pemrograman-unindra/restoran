@@ -66,7 +66,7 @@ public class pesanan {
 		System.out.print("Silakan pilih menu (0-5) : ");
 		switch (util.bacaInput()) {
 			case "1": tampilkan(true); break;
-			case "2": tampilkanRincian(0); break;
+			case "2": tampilkanRincian(); break;
 			case "3": tambah(); break;
 			case "4": ubah(); break;
 			case "5": hapus(); break;
@@ -114,20 +114,49 @@ public class pesanan {
 		}
 	}
 
-	public static void tampilkanRincian(Integer idPesanan) {
-		Integer id = idPesanan;
-		if (idPesanan == 0) {
-			System.out.println();
-			System.out.println("🗂️  Lihat Rincian Pesanan");
-			id = pilih();
-			if (id==0) {
-				menu();
-			}
-		}
-		// todo
-		if (idPesanan == 0) {
+	public static void tampilkanRincian() {
+		System.out.println();
+		System.out.println("🗂️  Lihat Rincian Pesanan");
+		Integer id = pilih();
+		if (id==0) {
 			menu();
 		}
+		String sql1 = "SELECT p.nomor, pel.nama pelanggan, p.status FROM pesanan p JOIN pelanggan pel ON pel.id = p.id_pelanggan WHERE p.id = ?";
+		String sql2 = "SELECT p.nama produk, r.catatan, r.jumlah, p.harga FROM rincian_pesanan r JOIN produk p ON p.id = r.id_produk WHERE r.id_pesanan = ?";
+		try (
+			PreparedStatement ps1 = util.koneksiDB().prepareStatement(sql1);
+			PreparedStatement ps2 = util.koneksiDB().prepareStatement(sql2);
+		) {
+			ps1.setInt(1, id);
+			ResultSet rs1 = ps1.executeQuery();
+			String nomor = "";
+			String status = "";
+			String pelanggan = "";
+			while (rs1.next()) {
+				nomor = rs1.getString("nomor");
+				status = rs1.getString("status");
+				pelanggan = rs1.getString("pelanggan");
+			}
+
+			ps2.setInt(1, id);
+			ResultSet rs2 = ps2.executeQuery();
+			ArrayList<LinkedHashMap<String, String>> rincian = new ArrayList<LinkedHashMap<String, String>>();
+			while (rs2.next()) {
+				LinkedHashMap<String, String> data = new LinkedHashMap<String, String>();
+				data.put("Menu", rs2.getString("produk"));
+				data.put("Catatan", rs2.getString("catatan"));
+				data.put("Jumlah", util.formatAngka(rs2.getInt("jumlah")));
+				data.put("Harga Satuan", util.formatAngka(rs2.getInt("harga")));
+				data.put("Subtotal", util.formatAngka(rs2.getInt("jumlah")*rs2.getInt("harga")));
+				rincian.add(data);
+			}
+			cetakRincian(nomor, status, pelanggan, rincian);
+		} catch (Exception e) {
+			System.out.println();
+			System.out.println("Gagal menampilkan rincian pesanan : " + e.getMessage());
+		}
+
+		menu();
 	}
 
 	public static void tambah() {
@@ -161,10 +190,11 @@ public class pesanan {
 					ps2.setString(3, data.get("catatan").toString());
 					ps2.executeUpdate();
 				}
-				tampilkanRincian(idPesanan);
 			}
 			System.out.println();
 			System.out.println("Data pesanan berhasil ditambahkan!");
+			System.out.println();
+			// cetakRincian(nomor, status, pelanggan, rincian);
 		} catch (Exception e) {
 			System.out.println();
 			System.out.println("Gagal menambah data pesanan : " + e.getMessage());
@@ -191,7 +221,10 @@ public class pesanan {
 		String sql1 = "UPDATE pesanan SET id_pelanggan = ?, nomor = ?, status = ?, nilai_pesanan = ? WHERE id = ?";
 		String sql2 = "DELETE FROM rincian_pesanan WHERE id_pesanan = ?";
 		String sql3 = "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) VALUES (?, ?, ?, ?)";
-		try (PreparedStatement ps1 = util.koneksiDB().prepareStatement(sql1)) {
+		try (
+			PreparedStatement ps1 = util.koneksiDB().prepareStatement(sql1);
+			PreparedStatement ps2 = util.koneksiDB().prepareStatement(sql2);
+		) {
 			ps1.setInt(1, idPelanggan);
 			ps1.setString(2, nomor);
 			ps1.setString(3, status);
@@ -199,7 +232,6 @@ public class pesanan {
 			ps1.setInt(5, id);
 			ps1.executeUpdate();
 
-			PreparedStatement ps2 = util.koneksiDB().prepareStatement(sql2);
 			ps2.setInt(1, id);
 			ps2.executeUpdate();
 
@@ -211,10 +243,10 @@ public class pesanan {
 				ps3.setString(3, data.get("catatan").toString());
 				ps3.executeUpdate();
 			}
-			tampilkanRincian(id);
-
 			System.out.println();
 			System.out.println("Data pesanan berhasil diubah!");
+			System.out.println();
+			// cetakRincian(nomor, status, pelanggan, rincian);
 		} catch (Exception e) {
 			System.out.println();
 			System.out.println("Gagal merubah data pesanan : " + e.getMessage());
@@ -233,7 +265,7 @@ public class pesanan {
 		String sql2 = "DELETE FROM pesanan WHERE id = ?";
 		try (
 			PreparedStatement ps1 = util.koneksiDB().prepareStatement(sql1);
-			PreparedStatement ps2 = util.koneksiDB().prepareStatement(sql1);
+			PreparedStatement ps2 = util.koneksiDB().prepareStatement(sql2);
 		) {
 			ps1.setInt(1, id);
 			ps1.executeUpdate();
@@ -328,6 +360,47 @@ public class pesanan {
 		} catch (Exception e) {}
 
 		return id;
+	}
+
+	static void cetakRincian(String nomor, String status, String pelanggan, ArrayList<LinkedHashMap<String, String>> rincian) {
+		System.out.println();
+		System.out.println("Nomor     : " + nomor);
+		System.out.println("Status    : " + status);
+		System.out.println("Pelanggan : " + pelanggan);
+
+		util.tampilkanData(rincian);
+
+		Integer total = 0;
+		for (LinkedHashMap<String, String> map : rincian) {
+			total += util.toInteger(map.get("Subtotal").replace(".", ""));
+		}
+
+		LinkedHashMap<String, Integer> charLength = util.getTableCharLength(rincian);
+
+		System.out.print("| Total     ");
+		for (String key : charLength.keySet()) {
+			if (key == "Subtotal") {
+				System.out.print("|");
+				util.cetakCell(charLength.get(key), util.formatAngka(total));
+			} else if (key != "Jumlah") {
+				for (Integer i = 0; i < (charLength.get(key) + 2); i++) {
+					System.out.print(" ");
+				}
+			}
+		}
+		System.out.println("|");
+
+		System.out.print("+");
+		for (String key : charLength.keySet()) {
+			String sign = (key == "Subtotal") ? "+" : "-";
+			if (key != "Menu") {
+				System.out.print(sign);
+			}
+			for (Integer i = 0; i < (charLength.get(key) + 2); i++) {
+				System.out.print("-");
+			}
+		}		
+		System.out.println("+");
 	}
 }
 

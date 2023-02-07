@@ -113,7 +113,7 @@ public class util {
 		System.out.println("+");
 	}
 
-	static void cetakCell(Integer length, String str) {
+	public static void cetakCell(Integer length, String str) {
 		Integer maxLength = (length - str.length() + 1);
 		if (str.charAt(0) >= '1' && str.charAt(0) <= '9') {
 			for (Integer i = 0; i < maxLength; i++) {
