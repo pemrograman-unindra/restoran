@@ -45,12 +45,12 @@ Ini adalah aplikasi restoran sederhana menggunakan Java dan SQLite.
   - [x] Menambah Data Kelompok Menu
   - [x] Merubah Data Kelompok Menu
   - [x] Menghapus Data Kelompok Menu
-- [ ] Pesanan
-  - [ ] Melihat Daftar Pesanan
-  - [ ] Melihat Rincian Pesanan
-  - [ ] Menambah Pesanan
-  - [ ] Merubah Pesanan
-  - [ ] Menghapus Pesanan
+- [x] Pesanan
+  - [x] Melihat Daftar Pesanan
+  - [x] Melihat Rincian Pesanan
+  - [x] Menambah Pesanan
+  - [x] Merubah Pesanan
+  - [x] Menghapus Pesanan
 
 ## Catatan
 Aplikasi ini menggunakan [Driver SQLite JDBC](https://github.com/xerial/sqlite-jdbc), seharusnya driver tersebut diunduh langsung dari sana, namun untuk memudahkan proses belajar terutama bagi pemula driver tersebut juga disertakan pada repositori ini.

@@ -487,13 +487,12 @@ class rincianPesanan {
 	// seeder
 	public static void buatDataAwal() {
 		String sql = ""
-			+ "INSERT OR IGNORE INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) VALUES"
-			+ "(1, 1, 1, 'Pedas'),"
-			+ "(1, 5, 1, null),"
-			+ "(2, 2, 1, null),"
-			+ "(3, 3, 1, null),"
-			+ "(4, 4, 1, null),"
-			+ "(5, 3, 1, null)";
+			+ "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) SELECT 1, 1, 1, 'Pedas' WHERE NOT EXISTS (SELECT 1 FROM rincian_pesanan WHERE id = 1);"
+			+ "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) SELECT 1, 5, 1, null WHERE NOT EXISTS (SELECT 1 FROM rincian_pesanan WHERE id = 2);"
+			+ "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) SELECT 2, 2, 1, null WHERE NOT EXISTS (SELECT 1 FROM rincian_pesanan WHERE id = 3);"
+			+ "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) SELECT 3, 3, 1, null WHERE NOT EXISTS (SELECT 1 FROM rincian_pesanan WHERE id = 4);"
+			+ "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) SELECT 4, 4, 1, null WHERE NOT EXISTS (SELECT 1 FROM rincian_pesanan WHERE id = 5);"
+			+ "INSERT INTO rincian_pesanan (id_pesanan, id_produk, jumlah, catatan) SELECT 5, 3, 1, null WHERE NOT EXISTS (SELECT 1 FROM rincian_pesanan WHERE id = 6);";
 		try {
 			Statement stmt = util.koneksiDB().createStatement();
 			stmt.execute(sql);
