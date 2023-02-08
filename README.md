@@ -52,5 +52,9 @@ Ini adalah aplikasi restoran sederhana menggunakan Java dan SQLite.
   - [x] Merubah Pesanan
   - [x] Menghapus Pesanan
 
+## Video Penggunaan
+https://user-images.githubusercontent.com/11884257/217404089-dbada4d4-9844-4123-8bee-b2f5894384da.mp4
+
+
 ## Catatan
 Aplikasi ini menggunakan [Driver SQLite JDBC](https://github.com/xerial/sqlite-jdbc), seharusnya driver tersebut diunduh langsung dari sana, namun untuk memudahkan proses belajar terutama bagi pemula driver tersebut juga disertakan pada repositori ini.
