@@ -61,15 +61,17 @@ public class util {
 	}
 
 	public static LinkedHashMap<String, Integer> getTableCharLength(ArrayList<LinkedHashMap<String, String>> list) {
-		LinkedHashMap<String, String> judulKolom = list.get(0);
 		LinkedHashMap<String, Integer> charLength = new LinkedHashMap<String, Integer>();
-		for (String key : judulKolom.keySet()) {
-			charLength.put(key, key.length());
-		}
-		for (LinkedHashMap<String, String> map : list) {
-			for (String key : map.keySet()) {
-				if (map.get(key) != null && map.get(key).length() > charLength.get(key)) {
-					charLength.put(key, map.get(key).length());
+		if (list.size() > 0) {
+			LinkedHashMap<String, String> judulKolom = list.get(0);
+			for (String key : judulKolom.keySet()) {
+				charLength.put(key, key.length());
+			}
+			for (LinkedHashMap<String, String> map : list) {
+				for (String key : map.keySet()) {
+					if (map.get(key) != null && map.get(key).length() > charLength.get(key)) {
+						charLength.put(key, map.get(key).length());
+					}
 				}
 			}
 		}
