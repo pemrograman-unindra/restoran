@@ -22,7 +22,7 @@ Ini adalah aplikasi restoran sederhana menggunakan Java dan SQLite.
 4. Jalankan aplikasi
   * Windows
 	```bash
-	java -cp .;sqlite-jdbc-3.40.0.0.jar restoran
+	java -cp ".;sqlite-jdbc-3.40.0.0.jar" restoran
 	```
   * Linux atau Mac
 	```bash
