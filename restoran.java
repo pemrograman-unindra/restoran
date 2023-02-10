@@ -1,7 +1,7 @@
 public class restoran {
 
 	public static void main(String[] args) {
-		System.out.println("Menyiapkan data ...");
+		System.out.println("Menyiapkan data...");
 
 		// migration
 		pelanggan.buatTabel();
