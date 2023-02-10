@@ -6,7 +6,7 @@ Ini adalah aplikasi restoran sederhana menggunakan Java dan SQLite.
 2. 202143579061 - [Ahmad Ramadhani](https://github.com/ramadhani-22)
 3. 202143579049 - [Gunawan Heri Saputra](https://github.com/Gunawan-Heri)
 4. 202243570024 - [Jeffry Luqman](https://github.com/jeffry-luqman)
-5. 202143500549 - Moh Naofal Nurul Huda
+5. 202143500549 - [Moh Naofal Nurul Huda](https://github.com/mohnaofal)
 6. 202143500411 - Muhammad Aftar Roziq
 
 ## Memulai
