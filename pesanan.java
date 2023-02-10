@@ -497,7 +497,6 @@ class rincianPesanan {
 		try {
 			Statement stmt = util.koneksiDB().createStatement();
 			for (String s : sql) {
-				System.out.println(s);
 				stmt.execute(s);
 			}
 			System.out.println("Data awal rincian_pesanan berhasil dibuat...");
